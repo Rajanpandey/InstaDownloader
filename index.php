@@ -1,14 +1,17 @@
 <?php
 
+//Script is gonna run for infinite amount of time (hence 0)
 set_time_limit(0);
 ini_set('default_socket_timeout', 300);
 session_start();
 
+//Instagram Client Keys
 define("clientID", 'YOUR CLIENT ID HERE');
 define("clientSecret", 'YOUR CLIENT SECRET HERE');
 define("redirectURI", 'YOUR DOMAIN HERE/index.php');
 define("imageDirectory", 'pics/');
 
+//Function to connect to instagram (called 2 times in this code)
 function connectToInstagram($url){
     $ch=curl_init();
     
@@ -25,6 +28,7 @@ function connectToInstagram($url){
     return $result;
 }
 
+//Function to get user ID
 function getUserID($userName){
     $url='https://api.instagram.com/v1/users/search?q='.$userName.'&client_id='.clientID;
     $instagramInfo=connectToInstagram($url);
@@ -33,6 +37,7 @@ function getUserID($userName){
     return $results['data'][0]['id'];    
 }
 
+//Function to display instagram images from the profile to the webpage (clicking on them will give fb url of the img
 function printImages($userID){
     $url='https://api.instagram.com/v1/users/'.$userID.'/media/recent?client_id='.clientID.'&count=5';
     $instagramInfo=connectToInstagram($url);
@@ -45,6 +50,7 @@ function printImages($userID){
     }
 }
 
+//Function to automatically save all this displayed instagram images to pics folder
 function savePicture($image_url){
     echo $image_url .'<br />';
     $filename=basename($image_url);
@@ -54,6 +60,7 @@ function savePicture($image_url){
     file_put_contents($destination, file_get_contents($image_url));
 }
 
+//If Instagram api verification is valid then proceed
 if($_GET['code']){
     $code=$_GET['code'];
     $url="https://api.instagram.com/oauth/access_token";
@@ -79,6 +86,7 @@ if($_GET['code']){
     printImages($userID);
 }
 
+//Else redirect back to the index.php
 else{     
 ?>   
  
